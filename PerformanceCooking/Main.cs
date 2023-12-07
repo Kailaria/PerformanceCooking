@@ -42,6 +42,9 @@ namespace KitchenPerformanceCooking
         protected override void OnPostActivate(Mod mod)
         {
             AddGameData();
+            // TODO: testing purposes only - Create PrefManager preference that toggles hob's WaitForFood modifier
+            // TODO: [2023-11-10] Ignore above, just make a new set of appliances: flat-top hobs (starter, regular, safety, danger)
+            //      and then replace all existing with the appropriate version.
             //Appliance hob = GDOUtils.GetExistingGDO(ApplianceReferences.Hob) as Appliance;
             //hob.EffectType = new CTableModifier
             //{
