@@ -1,10 +1,12 @@
-﻿using System;
+﻿using KitchenData;
+using KitchenLib.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PerformanceCooking
+namespace KitchenPerformanceCooking
 {
     public static class References
     {
@@ -17,5 +19,8 @@ namespace PerformanceCooking
         public static string SPRITE_PROCESS_KNEAD = "<sprite name=\"knead\">";
         public static string SPRITE_PROCESS_COOK = "<sprite name=\"cook\">";
         public static string SPRITE_PROCESS_BREW = "<sprite name=\"fill_coffee\">";
+
+        // Restaurant Status
+        public static RestaurantStatus PERFORMANCE_COOKING_STATUS = (RestaurantStatus)VariousUtils.GetID("Performance Cooking Status");
     }
 }
