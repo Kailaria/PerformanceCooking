@@ -20,9 +20,10 @@ namespace KitchenPerformanceCooking.Systems
         {
             base.Initialise();
             Hobs = GetEntityQuery(new QueryHelper()
-                                .All(typeof(CAppliance), typeof(CPosition), typeof(CAppliesEffect), typeof(CItemHolder))
-                                .None(typeof(CPerformanceModeCooker))
-                                );
+                        .All(typeof(CAppliance), typeof(CPosition), typeof(CAppliesEffect),
+                            typeof(CItemHolder), typeof(CCausesSpills))
+                        .None(typeof(CPerformanceModeCooker))
+                    );
         }
 
         // TODO: testing purposes only - Create PrefManager preference that toggles hob's WaitForFood modifier
