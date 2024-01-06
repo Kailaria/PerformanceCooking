@@ -1,8 +1,11 @@
+using KitchenData;
 using KitchenLib;
 using KitchenLib.Logging;
 using KitchenLib.Logging.Exceptions;
+using KitchenLib.References;
+using KitchenLib.Utils;
 using KitchenMods;
-using PerformanceCooking.Unlocks;
+using KitchenPerformanceCooking.Unlocks;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -26,10 +29,13 @@ namespace KitchenPerformanceCooking
         protected override void OnInitialise()
         {
             Logger.LogWarning($"{MOD_GUID} v{MOD_VERSION} in use!");
+            SetVictorianStandardsBlockedBy();
         }
 
         protected override void OnUpdate()
         {
+            var victorianStandards = (UnlockCard)GDOUtils.GetExistingGDO(UnlockCardReferences.LosePatienceInView);
+            Logger.LogInfo($"Blocked by count in OnUpdate: {victorianStandards.BlockedBy.Count}");
         }
 
         protected override void OnPostActivate(KitchenMods.Mod mod)
@@ -42,11 +48,37 @@ namespace KitchenPerformanceCooking
         {
             Logger.LogInfo($"Adding Game Data.");
 
-            Bundle = mod.GetPacks<AssetBundleModPack>().SelectMany(e => e.AssetBundles).FirstOrDefault() ?? throw new MissingAssetBundleException(MOD_GUID);
+            //Bundle = mod.GetPacks<AssetBundleModPack>().SelectMany(e => e.AssetBundles).FirstOrDefault() ?? throw new MissingAssetBundleException(MOD_GUID);
 
             AddGameDataObject<PerformanceCookingUnlock>();
 
             Logger.LogInfo($"Done adding game data.");
+        }
+
+        private void SetVictorianStandardsBlockedBy()
+        {
+            Logger.LogInfo("Make Victorian Standards be blocked by Performance Cooking.");
+            Logger.LogInfo("Getting Performance Cooking GDO");
+            var performanceCookingUnlock = GDOUtils.GetCastedGDO<UnlockCard, PerformanceCookingUnlock>();
+
+            // TODO: See if changing to OnInit helps find Vicky
+            Logger.LogInfo("Getting Vicky Standards GDO");
+            var victorianStandards = (UnlockCard)GDOUtils.GetExistingGDO(UnlockCardReferences.LosePatienceInView);
+
+            var vickyStanText = victorianStandards == null ? "null" : $"{victorianStandards}";
+            Logger.LogInfo($"Perf Cook: {performanceCookingUnlock} -- VickyStan?: {vickyStanText}");
+            if (performanceCookingUnlock != null && victorianStandards != null && victorianStandards.BlockedBy != null)
+            {
+                // Make Vicky Standards mutually exclusive from Performance Cooking, so that neither can be in the same restaurant.
+                Logger.LogInfo($"Blocked by count before: {victorianStandards.BlockedBy.Count}");
+                victorianStandards.BlockedBy.Add(performanceCookingUnlock);
+                Logger.LogInfo($"Blocked by count after: {victorianStandards.BlockedBy.Count}");
+            }
+            else
+            {
+                Logger.LogWarning("Victorian Standards will not be blocked by Performance Cooking.");
+            }
+
         }
     }
 }

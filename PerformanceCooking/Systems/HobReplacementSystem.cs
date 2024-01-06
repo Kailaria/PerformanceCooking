@@ -39,8 +39,10 @@ namespace KitchenPerformanceCooking.Systems
         //};
         protected override void OnUpdate()
         {
+            //if (GetSingleton<SGlobalStatusList>().Has(References.PERFORMANCE_COOKING_STATUS))
+            //{
 
-
+            //}
         }
     }
 }
