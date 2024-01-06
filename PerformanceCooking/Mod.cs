@@ -7,6 +7,7 @@ using KitchenLib.Utils;
 using KitchenMods;
 using KitchenPerformanceCooking.Unlocks;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -34,8 +35,6 @@ namespace KitchenPerformanceCooking
 
         protected override void OnUpdate()
         {
-            var victorianStandards = (UnlockCard)GDOUtils.GetExistingGDO(UnlockCardReferences.LosePatienceInView);
-            Logger.LogInfo($"Blocked by count in OnUpdate: {victorianStandards.BlockedBy.Count}");
         }
 
         protected override void OnPostActivate(KitchenMods.Mod mod)
@@ -58,21 +57,18 @@ namespace KitchenPerformanceCooking
         private void SetVictorianStandardsBlockedBy()
         {
             Logger.LogInfo("Make Victorian Standards be blocked by Performance Cooking.");
-            Logger.LogInfo("Getting Performance Cooking GDO");
             var performanceCookingUnlock = GDOUtils.GetCastedGDO<UnlockCard, PerformanceCookingUnlock>();
 
             // TODO: See if changing to OnInit helps find Vicky
-            Logger.LogInfo("Getting Vicky Standards GDO");
             var victorianStandards = (UnlockCard)GDOUtils.GetExistingGDO(UnlockCardReferences.LosePatienceInView);
 
-            var vickyStanText = victorianStandards == null ? "null" : $"{victorianStandards}";
-            Logger.LogInfo($"Perf Cook: {performanceCookingUnlock} -- VickyStan?: {vickyStanText}");
             if (performanceCookingUnlock != null && victorianStandards != null && victorianStandards.BlockedBy != null)
             {
-                // Make Vicky Standards mutually exclusive from Performance Cooking, so that neither can be in the same restaurant.
-                Logger.LogInfo($"Blocked by count before: {victorianStandards.BlockedBy.Count}");
-                victorianStandards.BlockedBy.Add(performanceCookingUnlock);
-                Logger.LogInfo($"Blocked by count after: {victorianStandards.BlockedBy.Count}");
+                // Hardcode Vicky Standards to be mutually exclusive from Performance Cooking, so that neither can be in the same restaurant.
+                FieldInfo HardcodedBlockers = ReflectionUtils.GetField<UnlockCard>("HardcodedBlockers");
+                List<Unlock> blockers = (List<Unlock>)HardcodedBlockers.GetValue(victorianStandards) ?? new List<Unlock>();
+                blockers.Add(performanceCookingUnlock);
+                HardcodedBlockers.SetValue(victorianStandards, blockers);
             }
             else
             {
